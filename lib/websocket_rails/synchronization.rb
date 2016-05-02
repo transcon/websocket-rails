@@ -58,10 +58,11 @@ module WebsocketRails
     end
 
     def publish(event)
-      Fiber.new do
-        event.server_token = server_token
-        redis.publish "websocket_rails.events", event.serialize
-      end.resume
+      if WebsocketRails.config.no_fiber
+        publish_actions(event)
+      else
+        Fiber.new{publish_actions(event)}.resume
+      end
     end
 
     def server_token
@@ -173,6 +174,11 @@ module WebsocketRails
         redis.hgetall('websocket_rails.users')
       end.resume
     end
-
+    private
+      def publish_actions(event)
+        event.server_token = server_token
+        redis.publish "websocket_rails.events", event.serialize
+        return
+      end
   end
 end

@@ -1,6 +1,10 @@
 module WebsocketRails
   class Configuration
 
+    def no_fiber
+      @no_fiber
+    end
+    def no_fiber=(bool) @no_fiber = bool end
     def user_identifier
       @user_identifier ||= :id
     end
